@@ -1,5 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, ValidationPipe } from '@nestjs/common';
 import { NotesService } from './notes.service';
+import { CreateNoteDto } from './dto/create-note.dto';
+import { EditNoteDto } from './dto/edit-note.dto';
 
 @Controller('notes')
 export class NotesController {
@@ -11,17 +13,17 @@ export class NotesController {
     }
 
     @Post()
-    create(@Body() note:{title:string,content:string}){
+    create(@Body(ValidationPipe) note:CreateNoteDto){
         return this.notesService.create(note);
     }
 
     @Patch(":id")
-    edit(@Param('id') id:number,@Body() note:{title:string,content:string}){
+    edit(@Param('id',ParseIntPipe) id:number,@Body(ValidationPipe) note:EditNoteDto){
         return this.notesService.edit(id,note);
     }
 
     @Delete(":id")
-    remove(@Param('id') id:number){
+    remove(@Param('id',ParseIntPipe) id:number){
         return this.notesService.remove(id);
     }
 }

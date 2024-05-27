@@ -1,4 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateNoteDto } from './dto/create-note.dto';
+import { EditNoteDto } from './dto/edit-note.dto';
 
 @Injectable()
 export class NotesService {
@@ -24,7 +26,7 @@ export class NotesService {
         return this.notes;
     }
 
-    create(note:{title:string,content:string}){
+    create(note:CreateNoteDto){
         const id=this.notes.reduce((highest,now)=>{
             return now.id>highest?now.id:highest;
         },0)+1;
@@ -33,13 +35,16 @@ export class NotesService {
         return this.notes;
     }
 
-    edit(id:number,note){
+    edit(id:number,note:EditNoteDto){
         this.notes=this.notes.map(n=>n.id==id?{...n,...note}:n)
         return this.notes;
     }
 
     remove(id:number){
-        this.notes=this.notes.filter(n=>n.id!=id)
+        let removed=this.notes.filter(n=>n.id!=id);
+        if(this.notes.length==removed.length)throw new NotFoundException("Note not found");
+        this.notes=removed;
+        
         return this.notes;
     }
 }
