@@ -8,7 +8,7 @@ export class NotesService {
         {
             id:1,
             title:"First note",
-            content:"This is the first note"
+            content:"This is the first note, this comes before the second note"
         },
         {
             id:2,
@@ -19,6 +19,11 @@ export class NotesService {
             id:3,
             title:"Third note",
             content:"This is the third note"
+        },
+        {
+            id:4,
+            title:"Fourth note",
+            content:"This is the fourth note"
         }
     ]
     
