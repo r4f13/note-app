@@ -1,7 +1,6 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, ValidationPipe } from '@nestjs/common';
 import { NotesService } from './notes.service';
-import { CreateNoteDto } from './dto/create-note.dto';
-import { EditNoteDto } from './dto/edit-note.dto';
+import { Prisma } from '@prisma/client';
 
 @Controller('notes')
 export class NotesController {
@@ -12,14 +11,20 @@ export class NotesController {
         return this.notesService.getAll();
     }
 
+    @Get(':id')
+    getOne(@Param('id',ParseIntPipe) id:number){
+        return this.notesService.getOne(id);
+    }
+
+
     @Post()
-    create(@Body(ValidationPipe) note:CreateNoteDto){
+    create(@Body(ValidationPipe) note:Prisma.NoteCreateInput){
         return this.notesService.create(note);
     }
 
     @Patch(":id")
-    edit(@Param('id',ParseIntPipe) id:number,@Body(ValidationPipe) note:EditNoteDto){
-        return this.notesService.edit(id,note);
+    edit(@Param('id',ParseIntPipe) id:number,@Body(ValidationPipe) noteUpdate:Prisma.NoteUpdateInput){
+        return this.notesService.edit(id,noteUpdate);
     }
 
     @Delete(":id")

@@ -1,55 +1,41 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateNoteDto } from './dto/create-note.dto';
-import { EditNoteDto } from './dto/edit-note.dto';
+import { DatabaseService } from 'src/database/database.service';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class NotesService {
-    private notes=[
-        {
-            id:1,
-            title:"First note",
-            content:"This is the first note, this comes before the second note"
-        },
-        {
-            id:2,
-            title:"Second note",
-            content:"This is the second note"
-        },
-        {
-            id:3,
-            title:"Third note",
-            content:"This is the third note"
-        },
-        {
-            id:4,
-            title:"Fourth note",
-            content:"This is the fourth note"
-        }
-    ]
+    constructor(private readonly databaseService: DatabaseService) { }
     
-    getAll(){
-        return this.notes;
+    async getAll(){
+        return this.databaseService.note.findMany()
     }
 
-    create(note:CreateNoteDto){
-        const id=this.notes.reduce((highest,now)=>{
-            return now.id>highest?now.id:highest;
-        },0)+1;
-
-        this.notes.push({id,...note})
-        return this.notes;
+    async getOne(id:number){
+        return this.databaseService.note.findUnique({
+            where:{id}
+        })
     }
 
-    edit(id:number,note:EditNoteDto){
-        this.notes=this.notes.map(n=>n.id==id?{...n,...note}:n)
-        return this.notes;
+    async create(note:Prisma.NoteCreateInput){
+        return this.databaseService.note.create({
+            data: note
+          })
     }
 
-    remove(id:number){
-        let removed=this.notes.filter(n=>n.id!=id);
-        if(this.notes.length==removed.length)throw new NotFoundException("Note not found");
-        this.notes=removed;
-        
-        return this.notes;
+    async edit(id:number,noteUpdate:Prisma.NoteUpdateInput){
+        return this.databaseService.note.update({
+            where: {
+              id,
+            },
+            data: noteUpdate,
+          })
+    }
+
+    async remove(id:number){
+        return this.databaseService.note.delete({
+            where: {
+              id,
+            }
+          })
     }
 }
