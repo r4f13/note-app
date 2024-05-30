@@ -17,10 +17,9 @@ export class NotesController {
         return this.notesService.getOne(id);
     }
 
-
     @Post()
     create(@Body(ValidationPipe) note:CreateNoteDto){
-        return this.notesService.create(note);
+        return this.notesService.create({...note,author:{}});
     }
 
     @Patch(":id")
