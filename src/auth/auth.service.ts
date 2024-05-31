@@ -36,7 +36,6 @@ export class AuthService {
         const match=await argon.verify(user.hash,dto.password);
         if(!match)throw new ForbiddenException("Username or password is incorrect");
 
-        delete user.hash;
         return this.signToken(user.id,user.username);
     }
 
