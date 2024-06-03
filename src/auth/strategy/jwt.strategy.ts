@@ -18,4 +18,16 @@ export class JwtStrategy extends PassportStrategy(Strategy,'jwt'){
       }) {
         return payload;
       }
+
+      // async validate(payload: {
+      //   sub: number;
+      //   username: string;
+      // }) {
+      //   const user= await this.databaseService.user.findUnique({
+      //     where:{id:payload.sub}
+      //   });
+
+      //   delete user.hash;
+      //   return user;
+      // }
 }

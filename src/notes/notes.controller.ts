@@ -10,31 +10,31 @@ export class NotesController {
 
     @UseGuards(JwtGuard)
     @Get()
-    getAll(@User() user){
-        return this.notesService.getAll();
+    getAll(@User('sub') userId:number){
+        return this.notesService.getAll(userId);
     }
 
     @UseGuards(JwtGuard)
-    @Get(':id')
-    getOne(@Param('id',ParseIntPipe) id:number){
-        return this.notesService.getOne(id);
+    @Get(':noteId')
+    getOne( @User('sub') userId:number,@Param('noteId',ParseIntPipe) noteId:number){
+        return this.notesService.getOne(userId,noteId);
     }
 
     @UseGuards(JwtGuard)
     @Post()
-    create(@Body(ValidationPipe) note:CreateNoteDto){
-        return this.notesService.create({...note,author:{}});
+    create(@User('sub') userId:number,@Body(ValidationPipe) dto:CreateNoteDto){
+        return this.notesService.create(userId,dto);
     }
 
     @UseGuards(JwtGuard)
-    @Patch(":id")
-    edit(@Param('id',ParseIntPipe) id:number,@Body(ValidationPipe) noteUpdate:EditNoteDto){
-        return this.notesService.edit(id,noteUpdate);
+    @Patch(':noteId')
+    edit(@User('sub') userId:number,@Param('noteId',ParseIntPipe) noteId:number,@Body(ValidationPipe) noteUpdate:EditNoteDto){
+        return this.notesService.edit(userId,noteId,noteUpdate);
     }
 
     @UseGuards(JwtGuard)
-    @Delete(":id")
-    remove(@Param('id',ParseIntPipe) id:number){
-        return this.notesService.remove(id);
+    @Delete(':noteId')
+    remove( @User('sub') userId:number,@Param('noteId',ParseIntPipe) noteId:number){
+        return this.notesService.remove(userId,noteId);
     }
 }
