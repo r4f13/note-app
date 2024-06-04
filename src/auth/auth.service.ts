@@ -15,7 +15,7 @@ export class AuthService {
             const hash = await argon.hash(dto.password);
             const user =  await this.databaseService.user.create({
                 data: {
-                    username:dto.username,
+                    username:dto.username.toLowerCase(),
                     hash
                 }
             });
@@ -29,7 +29,7 @@ export class AuthService {
 
     async signin(dto:AuthDto){
         const user = await this.databaseService.user.findUnique({
-            where:{username:dto.username}
+            where:{username:dto.username.toLowerCase()}
         })
         if(!user)throw new ForbiddenException("Username or password is incorrect");
 

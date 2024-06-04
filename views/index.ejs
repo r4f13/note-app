@@ -37,9 +37,8 @@
         <nav class="navbar bg-primary mb-2">
             <div class="container-fluid">
               <a class="navbar-brand h1 text-light"><i class="bi bi-journal-text"></i> Note App</a>
-              <form class="d-flex" role="search">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-light" type="submit">Search</button>
+              <form class="d-flex">
+                <button class="btn btn-outline-light" onclick="logout()"><i class="bi bi-box-arrow-left"></i> Logout</button>
               </form>
             </div>
         </nav>
@@ -53,8 +52,9 @@
     <script>
         const noteContainer=document.getElementById("note-container");
         function refresh(){
-            fetch('notes')
-                .then(response => response.json())
+            fetch('notes',{
+                headers:{'Authorization': `Bearer ${sessionStorage.getItem('token')}`}
+            }).then(response => response.json())
                 .then(notes => {
                     let notesHtml="";
                     notes.forEach(note=>{
@@ -69,10 +69,10 @@
                         `
                     })
                     noteContainer.innerHTML=notesHtml;
-            })
+            }).catch(()=>location.href='sign')
         }
         window.onload=()=>refresh();
-        const remove=id=>fetch('notes/'+id,{method:'DELETE'}).then(()=>refresh())
+        const remove=id=>fetch('notes/'+id,{method:'DELETE',headers:{'Authorization': `Bearer ${sessionStorage.getItem('token')}`}}).then(()=>refresh())
 
         const prompt=document.getElementById("prompt");
         const openPrompt=()=>prompt.style.display="block";
@@ -90,7 +90,9 @@
             save.setAttribute('onclick',"action('create')");
         }
         function edit(id){
-            fetch('notes/'+id).then(res=>res.json()).then(note=>{
+            fetch('notes/'+id,{
+                headers:{'Authorization': `Bearer ${sessionStorage.getItem('token')}`}
+            }).then(res=>res.json()).then(note=>{
                 title.value=note.title;
                 content.value=note.content;
                 openPrompt();
@@ -104,7 +106,8 @@
                 method:'POST',
                 headers: {
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`
                 },
                 body: JSON.stringify({title:title.value,content:content.value})
                 }).then(()=>{
@@ -116,7 +119,8 @@
                 method:'PATCH',
                 headers: {
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`
                 },
                 body: JSON.stringify({title:title.value,content:content.value})
                 }).then(()=>{
@@ -124,6 +128,11 @@
                     refresh();
                 })
             }
+        }
+
+        function logout(){
+            sessionStorage.clear();
+            location.href='sign';
         }
     </script>
 </html>
